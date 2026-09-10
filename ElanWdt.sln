@@ -1,0 +1,18 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElanWdt", "ElanWdt\ElanWdt.csproj", "{AE77D221-37AD-4995-B793-358E5FBC8CC1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AE77D221-37AD-4995-B793-358E5FBC8CC1}.Debug|Any CPU.ActiveCfg = Debug|AnyCPU
+		{AE77D221-37AD-4995-B793-358E5FBC8CC1}.Debug|Any CPU.Build.0 = Debug|AnyCPU
+		{AE77D221-37AD-4995-B793-358E5FBC8CC1}.Release|Any CPU.ActiveCfg = Release|AnyCPU
+		{AE77D221-37AD-4995-B793-358E5FBC8CC1}.Release|Any CPU.Build.0 = Release|AnyCPU
+	EndGlobalSection
+EndGlobal
