@@ -14,8 +14,10 @@ namespace ElanWdt
         private static int Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
+
             if (args.Length == 1 &&
-                (args[0] == "/?" || args[0] == "/？" ||
+                (args[0] == "/?" ||
+                 args[0] == "/？" ||
                  args[0].Equals("--help", StringComparison.OrdinalIgnoreCase)))
             {
                 ShowHelp();
@@ -26,31 +28,69 @@ namespace ElanWdt
             {
                 Dictionary<string, string> options = ParseArguments(args);
                 string value;
-                string vid = NormalizeId(options.TryGetValue("vid", out value)
-                    ? value : ConfigurationManager.AppSettings["VID"], "VID");
-                string pid = NormalizeId(options.TryGetValue("pid", out value)
-                    ? value : ConfigurationManager.AppSettings["PID"], "PID");
+
+                string vid = NormalizeId(
+                    options.TryGetValue("vid", out value)
+                        ? value
+                        : ConfigurationManager.AppSettings["VID"],
+                    "VID");
+
+                string pid = NormalizeId(
+                    options.TryGetValue("pid", out value)
+                        ? value
+                        : ConfigurationManager.AppSettings["PID"],
+                    "PID");
+
+                string serviceName = (
+                    options.TryGetValue("service", out value)
+                        ? value
+                        : ConfigurationManager.AppSettings["ServiceName"]
+                            ?? "WbioSrvc").Trim();
+
+                if (string.IsNullOrWhiteSpace(serviceName))
+                {
+                    throw new ArgumentException("服務名稱不可為空白。");
+                }
 
                 if (!IsAdministrator())
                 {
-                    Console.Error.WriteLine("請從以系統管理員身分開啟的命令提示字元執行。");
+                    Console.Error.WriteLine(
+                        "請從以系統管理員身分開啟的命令提示字元執行。");
                     return 1;
                 }
 
                 Console.WriteLine("VID={0}, PID={1}", vid, pid);
+                Console.WriteLine("Service: " + serviceName);
+
                 string devicePath = DriverIO.GetDevicePath(vid, pid);
+
                 if (string.IsNullOrEmpty(devicePath))
                 {
-                    Console.Error.WriteLine("找不到符合 VID={0}, PID={1} 的 Biometric Reader。", vid, pid);
+                    Console.Error.WriteLine(
+                        "找不到符合 VID={0}, PID={1} 的 Biometric Reader。",
+                        vid,
+                        pid);
                     return 1;
                 }
 
                 Console.WriteLine("Device: " + devicePath);
-                Console.WriteLine("即將停止 WbioSrvc；本工具不會自動重新啟動此服務，即使後續操作失敗。");
-                ServiceHelper.StopWbioSrvc();
+                Console.WriteLine(
+                    "即將停止 {0}；WDT 指令成功後會嘗試啟動此服務，" +
+                    "若中途失敗則不會自動啟動。",
+                    serviceName);
+
+                ServiceHelper.StopService(serviceName);
+
                 Console.WriteLine("傳送 WDT reset 指令...");
                 int bytesReturned = DriverIO.Elan_WDT(devicePath);
-                Console.WriteLine("DeviceIoControl 成功，BytesReturned={0}；尚未驗證硬體是否完成重置。", bytesReturned);
+
+                Console.WriteLine(
+                    "DeviceIoControl 成功，BytesReturned={0}；" +
+                    "尚未驗證硬體是否完成重置。",
+                    bytesReturned);
+
+                ServiceHelper.StartService(serviceName);
+
                 return 0;
             }
             catch (ArgumentException ex)
@@ -61,94 +101,207 @@ namespace ElanWdt
             }
             catch (Win32Exception ex)
             {
-                Console.Error.WriteLine("Win32 錯誤：{0} (0x{0:X})，{1}", ex.NativeErrorCode, ex.Message);
+                Console.Error.WriteLine(
+                    "Win32 錯誤：{0} (0x{0:X})，{1}",
+                    ex.NativeErrorCode,
+                    ex.Message);
                 return 1;
             }
             catch (Exception ex)
             {
                 Console.Error.WriteLine("執行失敗：" + ex.Message);
+
                 Win32Exception native = ex.InnerException as Win32Exception;
+
                 if (native != null)
-                    Console.Error.WriteLine("Win32 錯誤：{0} (0x{0:X})，{1}", native.NativeErrorCode, native.Message);
+                {
+                    Console.Error.WriteLine(
+                        "Win32 錯誤：{0} (0x{0:X})，{1}",
+                        native.NativeErrorCode,
+                        native.Message);
+                }
+
                 return 1;
             }
+            //finally
+            //{
+            //    if (!Console.IsInputRedirected)
+            //    {
+            //        Console.WriteLine();
+            //        Console.WriteLine("執行結束，按任意鍵關閉...");
+            //        Console.ReadKey(true);
+            //    }
+            //}
         }
 
         private static bool IsAdministrator()
         {
             using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
             {
-                return new WindowsPrincipal(identity).IsInRole(WindowsBuiltInRole.Administrator);
+                return new WindowsPrincipal(identity).IsInRole(
+                    WindowsBuiltInRole.Administrator);
             }
         }
 
         private static Dictionary<string, string> ParseArguments(string[] args)
         {
-            var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var result = new Dictionary<string, string>(
+                StringComparer.OrdinalIgnoreCase);
+
             foreach (string arg in args)
             {
                 int separator = arg.IndexOf(':');
-                if (!arg.StartsWith("/", StringComparison.Ordinal) || separator <= 1 || separator == arg.Length - 1)
-                    throw new ArgumentException("格式應為 /vid:04F3 /pid:0C8C。");
+
+                if (!arg.StartsWith("/", StringComparison.Ordinal) ||
+                    separator <= 1 ||
+                    separator == arg.Length - 1)
+                {
+                    throw new ArgumentException(
+                        "格式應為 /vid:04F3 /pid:0C8C /service:WbioSrvc。");
+                }
 
                 string key = arg.Substring(1, separator - 1);
                 string value = arg.Substring(separator + 1);
+
                 if (!key.Equals("vid", StringComparison.OrdinalIgnoreCase) &&
-                    !key.Equals("pid", StringComparison.OrdinalIgnoreCase))
+                    !key.Equals("pid", StringComparison.OrdinalIgnoreCase) &&
+                    !key.Equals("service", StringComparison.OrdinalIgnoreCase))
+                {
                     throw new ArgumentException("不支援的參數：" + key);
+                }
+
                 if (result.ContainsKey(key))
+                {
                     throw new ArgumentException("重複的參數：" + key);
+                }
+
                 result.Add(key, value);
             }
+
             return result;
         }
 
         private static string NormalizeId(string value, string name)
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException(name + " 未設定，請修改設定檔或指定命令列參數。");
+            {
+                throw new ArgumentException(
+                    name + " 未設定，請修改設定檔或指定命令列參數。");
+            }
+
             value = value.Trim();
+
             if (value.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+            {
                 value = value.Substring(2);
+            }
+
             ushort number;
-            if (value.Length != 4 || !ushort.TryParse(value, NumberStyles.AllowHexSpecifier,
-                CultureInfo.InvariantCulture, out number))
-                throw new ArgumentException(name + " 必須是 4 位十六進位，例如 04F3 或 0x04F3。");
+
+            if (value.Length != 4 ||
+                !ushort.TryParse(
+                    value,
+                    NumberStyles.AllowHexSpecifier,
+                    CultureInfo.InvariantCulture,
+                    out number))
+            {
+                throw new ArgumentException(
+                    name + " 必須是 4 位十六進位，例如 04F3 或 0x04F3。");
+            }
+
             return number.ToString("X4", CultureInfo.InvariantCulture);
         }
 
         private static void ShowHelp()
         {
-            Console.WriteLine("用法：elan_WDT.exe [/vid:04F3] [/pid:0C8C]");
+            Console.WriteLine(
+                "用法：elan_WDT.exe [/vid:04F3] [/pid:0C8C] [/service:WbioSrvc]");
             Console.WriteLine("說明：elan_WDT.exe /? 或 --help");
-            Console.WriteLine("未指定的 VID/PID 從設定檔讀取；命令列優先。也接受 0x 前綴。");
-            Console.WriteLine("範例：elan_WDT.exe /vid:0x04F3 /pid:0x0C8C");
-            Console.WriteLine("此工具會停止 WbioSrvc，且不會自動重新啟動。");
+            Console.WriteLine(
+                "未指定的 VID/PID 從設定檔讀取；命令列優先。也接受 0x 前綴。");
+            Console.WriteLine(
+                "服務名稱優先使用 /service，其次為設定檔 ServiceName，" +
+                "未設定則使用 WbioSrvc。");
+            Console.WriteLine(
+                "範例：elan_WDT.exe /vid:0x04F3 /pid:0x0C8C /service:WbioSrvc");
+            Console.WriteLine(
+                "此工具會停止指定服務；WDT 指令成功後會嘗試啟動服務，" +
+                "中途失敗則不會自動啟動。");
         }
     }
 
     internal static class ServiceHelper
     {
-        public static void StopWbioSrvc()
+        public static void StopService(string serviceName)
         {
             TimeSpan timeout = TimeSpan.FromSeconds(10);
-            using (var service = new ServiceController("WbioSrvc"))
+
+            using (var service = new ServiceController(serviceName))
             {
                 service.Refresh();
+
                 if (service.Status == ServiceControllerStatus.Stopped)
                 {
-                    Console.WriteLine("WbioSrvc 已停止。");
+                    Console.WriteLine("{0} 已停止。", serviceName);
                     return;
                 }
+
                 if (service.Status == ServiceControllerStatus.StartPending)
                 {
-                    service.WaitForStatus(ServiceControllerStatus.Running, timeout);
+                    service.WaitForStatus(
+                        ServiceControllerStatus.Running,
+                        timeout);
                     service.Refresh();
                 }
+
                 if (service.Status != ServiceControllerStatus.StopPending)
+                {
                     service.Stop();
-                service.WaitForStatus(ServiceControllerStatus.Stopped, timeout);
-                Console.WriteLine("WbioSrvc 已停止。");
+                }
+
+                service.WaitForStatus(
+                    ServiceControllerStatus.Stopped,
+                    timeout);
+
+                Console.WriteLine("{0} 已停止。", serviceName);
+            }
+        }
+
+        public static void StartService(string serviceName)
+        {
+            TimeSpan timeout = TimeSpan.FromSeconds(10);
+
+            using (var service = new ServiceController(serviceName))
+            {
+                service.Refresh();
+
+                if (service.Status == ServiceControllerStatus.StopPending)
+                {
+                    service.WaitForStatus(
+                        ServiceControllerStatus.Stopped,
+                        timeout);
+                    service.Refresh();
+                }
+
+                if (service.Status == ServiceControllerStatus.Stopped)
+                {
+                    Console.WriteLine("啟動 {0}...", serviceName);
+                    service.Start();
+                }
+                else if (service.Status != ServiceControllerStatus.Running &&
+                         service.Status != ServiceControllerStatus.StartPending)
+                {
+                    throw new InvalidOperationException(
+                        "服務 " + serviceName +
+                        " 目前狀態為 " + service.Status +
+                        "，請先在 Windows 服務管理工具確認狀態。");
+                }
+
+                service.WaitForStatus(
+                    ServiceControllerStatus.Running,
+                    timeout);
+
+                Console.WriteLine("{0} 已啟動。", serviceName);
             }
         }
     }
