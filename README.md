@@ -23,9 +23,15 @@ Unity Package Manager 會還原 Visual Studio 整合套件及其相依套件。
 5. 在 **Edit → Project Settings → Player → Other Settings** 確認
    **Active Input Handling** 為 **Input Manager (Old)** 或 **Both**，若有修改則依提示重啟。
    本專案使用舊式鍵盤輸入，未加入新版 Input System 套件。
-6. 執行 **Tools → Indoor Drone → Create Demo Scene**。
+6. 執行 **Tools → Indoor Drone → Validate Development Environment**，先檢查：
+   - Unity Editor 是否為 **2022.3.62f3**
+   - **Visual Studio Editor 2.0.22** 是否已由 Package Manager 還原
+   - **Active Input Handling** 是否仍為 **Input Manager (Old)** 或 **Both**
+   - 是否已存在可啟動的示範場景，以及該場景是否已加入 Build Settings
+7. 執行 **Tools → Indoor Drone → Create Demo Scene**。
    場景會儲存在 `Assets/IndoorDrone/Generated/Demo/IndoorDrone.unity`；
-   重複產生會使用新的資料夾，不覆寫舊場景。點選 **Play**，再點 Game 視窗取得鍵盤焦點。
+   重複產生會使用新的資料夾，不覆寫舊場景，並會自動把新產生的場景加入 **Build Settings**。
+   點選 **Play**，再點 Game 視窗取得鍵盤焦點。
 
 ### 使用 VS2022 編輯與偵錯
 
@@ -37,6 +43,8 @@ Unity Package Manager 會還原 Visual Studio 整合套件及其相依套件。
    若沒有此按鈕，請檢查 Visual Studio Tools for Unity 是否安裝完成。
 4. 若補全或 UnityEngine 參考異常，確認 Package Manager 中 **Visual Studio Editor 2.0.22**
    已還原，然後重新產生專案檔；不要手動加入 Unity DLL 或把腳本轉成 Console 專案。
+5. 若更換 Unity 版本、刪除 `Library`、或第一次在新電腦開啟專案，請重新執行
+   **Validate Development Environment**，再產生方案檔與 Attach 偵錯。
 
 `.sln`／`.csproj` 由 Unity 依本機環境產生且不提交版本控制。
 VS2022 用於編輯與偵錯；腳本編譯、場景執行與遊戲輸出仍以 **Unity Editor** 為準，
@@ -44,8 +52,9 @@ VS2022 用於編輯與偵錯；腳本編譯、場景執行與遊戲輸出仍以 
 
 ### 建置 Windows 執行檔
 
-1. 開啟產生的場景，在 **File → Build Settings → Add Open Scenes** 加入它，
-   確認清單中只勾選要啟動的示範場景。
+1. `Create Demo Scene` 會把剛產生的場景自動加入 **File → Build Settings**。
+   若你手動開啟其他場景、或保留了多個舊的 Generated Demo，請確認清單中只勾選
+   這次要啟動的示範場景；必要時再按 **Add Open Scenes** 更新。
 2. 選 **PC, Mac & Linux Standalone → Windows → x86_64**，必要時按 **Switch Platform**。
 3. 在 Player Settings 使用 **Mono** 作為 MVP 的 Scripting Backend，再按 **Build And Run**，
    選擇 `Builds/Windows` 下的輸出位置。若改用 IL2CPP，需另裝 Unity Hub 的
@@ -112,6 +121,18 @@ VS2022 用於編輯與偵錯；腳本編譯、場景執行與遊戲輸出仍以 
 
 儲存庫尚無自動化測試或 CI 建置流程。開發沙箱未安裝 Unity Editor／VS2022，
 無法在此還原 Unity 套件、產生方案、編譯 Unity API、執行 Play Mode 或輸出 Windows 執行檔。
-轉換僅加入專案／套件設定與資產識別檔，未修改飛行或換燈泡程式邏輯。
-請在本機確認 Hub 可開啟、Console 無錯誤、VS2022 可補全與中斷點偵錯，
-再依「任務與驗收」走完任務，並在 Windows 建置結果重跑相同流程。
+此沙箱仍未安裝 Unity Editor／VS2022，因此**未在此實際驗證** Hub 開啟、套件還原、
+方案產生、Attach to Unity 偵錯、Play Mode、或 Windows Build。此次補強僅加入：
+
+- Editor 端的 **Validate Development Environment** 檢查，讓乾淨 checkout 可明確看出
+  Unity 版本、VS 套件、舊式輸入設定與示範場景／Build Settings 是否到位。
+- `Create Demo Scene` 產生後自動將當前示範場景加入 Build Settings，減少首次建置遺漏。
+
+請在本機依序執行：
+
+1. Unity Hub 以 **2022.3.62f3** 開啟專案。
+2. 等待 Package Manager 與 Script Compilation 完成。
+3. 執行 **Validate Development Environment**，確認沒有阻塞項目。
+4. 執行 **Create Demo Scene**，按 **Play** 跑完「任務與驗收」。
+5. 在 VS2022 重新產生方案，使用 **Attach to Unity** 驗證中斷點。
+6. 進行 Windows Build，於輸出執行檔重跑同一套任務流程。
