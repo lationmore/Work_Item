@@ -307,48 +307,56 @@ namespace IndoorDrone.Editor
             inputSupported = false;
             inputDetected = false;
 
-            PropertyInfo property = typeof(PlayerSettings).GetProperty("activeInputHandler",
-                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-            if (property == null)
-                return "unknown";
-
-            object value = property.GetValue(null, null);
-            if (value == null)
-                return "unknown";
-
-            inputDetected = true;
-            string text = value.ToString() ?? string.Empty;
-            if (int.TryParse(text, out int numeric))
+            try
             {
-                switch (numeric)
+                PropertyInfo property = typeof(PlayerSettings).GetProperty("activeInputHandler",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+                if (property == null)
+                    return "unknown";
+
+                object value = property.GetValue(null, null);
+                if (value == null)
+                    return "unknown";
+
+                inputDetected = true;
+                string text = value.ToString() ?? string.Empty;
+                if (int.TryParse(text, out int numeric))
                 {
-                    case 0:
-                        inputSupported = true;
-                        return "Input Manager (Old)";
-                    case 1:
-                        return "Input System Package (New)";
-                    case 2:
-                        inputSupported = true;
-                        return "Both";
+                    switch (numeric)
+                    {
+                        case 0:
+                            inputSupported = true;
+                            return "Input Manager (Old)";
+                        case 1:
+                            return "Input System Package (New)";
+                        case 2:
+                            inputSupported = true;
+                            return "Both";
+                    }
                 }
-            }
 
-            if (text.IndexOf("Both", StringComparison.OrdinalIgnoreCase) >= 0)
+                if (text.IndexOf("Both", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    inputSupported = true;
+                    return "Both";
+                }
+
+                if (text.IndexOf("Old", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    inputSupported = true;
+                    return "Input Manager (Old)";
+                }
+
+                if (text.IndexOf("New", StringComparison.OrdinalIgnoreCase) >= 0)
+                    return "Input System Package (New)";
+
+                return text;
+            }
+            catch (Exception exception)
             {
-                inputSupported = true;
-                return "Both";
+                Debug.LogWarning("[Indoor Drone] Failed to read Active Input Handling: " + exception.Message);
+                return "unknown";
             }
-
-            if (text.IndexOf("Old", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                inputSupported = true;
-                return "Input Manager (Old)";
-            }
-
-            if (text.IndexOf("New", StringComparison.OrdinalIgnoreCase) >= 0)
-                return "Input System Package (New)";
-
-            return text;
         }
 
         private sealed class ValidationReport
