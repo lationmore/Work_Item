@@ -9,3 +9,6 @@
 *.csproj
 *.sln
 *.suo
+*.csproj.user
+*.slnx
+*.userprefs

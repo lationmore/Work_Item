@@ -4,19 +4,53 @@
 
 C# + Unity 桌面鍵盤操作範例，包含封閉室內場景、簡化四旋翼飛行、追蹤攝影機、
 模擬斷電聯鎖與完整換燈泡任務。場景、材質與模型皆由 Unity Editor 選單產生，
-不需要下載外部素材或安裝額外套件。
+不需要下載外部素材。儲存庫已具備 Unity 專案結構，可由 Unity Hub 直接開啟；
+Unity Package Manager 會還原 Visual Studio 整合套件及其相依套件。
 
 ### 啟動
 
-1. 使用 **Unity Hub** 建立 **Unity 2022.3 LTS / 3D（Built-in Render Pipeline）** 專案。
-   本儲存庫提供可匯入的 Assets，不是已建立完成的 Unity 專案；不支援直接以 Hub 開啟儲存庫。
-2. 將本儲存庫的 `Assets/IndoorDrone` 複製到新專案的 `Assets` 內。
-3. 在 **Edit → Project Settings → Player → Other Settings** 將
-   **Active Input Handling** 設為 **Input Manager (Old)** 或 **Both**，依提示重啟。
-4. 等待編譯，執行 **Tools → Indoor Drone → Create Demo Scene**。
-5. 場景會儲存在 `Assets/IndoorDrone/Generated/Demo/IndoorDrone.unity`；
+1. 在 Windows 安裝 **Unity Hub** 與 **Unity 2022.3.62f3 LTS**。
+   專案版本記錄於 `ProjectSettings/ProjectVersion.txt`；可從 Unity 官方下載封存取得。
+   若改用較新的 2022.3 LTS 修補版本，請先備份並重新完成驗收，不要降回未修補的舊版本。
+2. 安裝 **Visual Studio 2022**，在 Visual Studio Installer 勾選
+   **「使用 Unity 的遊戲開發」（Game development with Unity）**，包含 Visual Studio Tools for Unity。
+3. 在 **Unity Hub → Projects → Add → Add project from disk** 選取本儲存庫根目錄
+   （同時包含 `Assets`、`Packages`、`ProjectSettings` 的資料夾），使用上述 Editor 開啟。
+   **不需要另建專案或複製 Assets，也不是先用 VS 開啟資料夾建置。**
+4. 首次開啟需連網讓 Unity Package Manager 還原套件；Unity 會建立 `Library`、
+   `Packages/packages-lock.json` 與其餘預設 Project Settings。專案使用 **Built-in Render Pipeline**，
+   不需安裝 URP／HDRP。等右下角匯入與編譯完成，確認 Console 沒有紅色錯誤。
+5. 在 **Edit → Project Settings → Player → Other Settings** 確認
+   **Active Input Handling** 為 **Input Manager (Old)** 或 **Both**，若有修改則依提示重啟。
+   本專案使用舊式鍵盤輸入，未加入新版 Input System 套件。
+6. 執行 **Tools → Indoor Drone → Create Demo Scene**。
+   場景會儲存在 `Assets/IndoorDrone/Generated/Demo/IndoorDrone.unity`；
    重複產生會使用新的資料夾，不覆寫舊場景。點選 **Play**，再點 Game 視窗取得鍵盤焦點。
-6. 若要輸出桌面版本，在 **File → Build Settings → Add Open Scenes** 加入產生的場景再建置。
+
+### 使用 VS2022 編輯與偵錯
+
+1. 在 Unity 的 **Edit → Preferences → External Tools → External Script Editor**
+   選擇 **Visual Studio 2022**。這是每台電腦的偏好設定，不在儲存庫內硬編碼 VS 安裝路徑。
+2. 按 **Regenerate project files**，再使用 **Assets → Open C# Project**，
+   或雙擊 Project 視窗中的 C# 腳本，以 VS2022 開啟 Unity 產生的方案。
+3. 在 VS2022 設定中斷點，使用 **Attach to Unity** 連接目前 Editor，回 Unity 按 Play。
+   若沒有此按鈕，請檢查 Visual Studio Tools for Unity 是否安裝完成。
+4. 若補全或 UnityEngine 參考異常，確認 Package Manager 中 **Visual Studio Editor 2.0.22**
+   已還原，然後重新產生專案檔；不要手動加入 Unity DLL 或把腳本轉成 Console 專案。
+
+`.sln`／`.csproj` 由 Unity 依本機環境產生且不提交版本控制。
+VS2022 用於編輯與偵錯；腳本編譯、場景執行與遊戲輸出仍以 **Unity Editor** 為準，
+不能只靠 VS 的 Build／F5 產生或啟動模擬平台。
+
+### 建置 Windows 執行檔
+
+1. 開啟產生的場景，在 **File → Build Settings → Add Open Scenes** 加入它，
+   確認清單中只勾選要啟動的示範場景。
+2. 選 **PC, Mac & Linux Standalone → Windows → x86_64**，必要時按 **Switch Platform**。
+3. 在 Player Settings 使用 **Mono** 作為 MVP 的 Scripting Backend，再按 **Build And Run**，
+   選擇 `Builds/Windows` 下的輸出位置。若改用 IL2CPP，需另裝 Unity Hub 的
+   **Windows Build Support (IL2CPP)** 以及對應的 VS C++ 建置工具與 Windows SDK。
+4. 發送執行檔時保留整個輸出資料夾（包含 `_Data`、`UnityPlayer.dll` 等），不可只複製 `.exe`。
    MVP 的重新開始方式是停止／重新進入 Play；獨立執行檔則關閉後重新啟動。
 
 ### 操作
@@ -61,6 +95,12 @@ C# + Unity 桌面鍵盤操作範例，包含封閉室內場景、簡化四旋翼
 - `Scripts/DroneCamera.cs`：跟隨攝影機。
 - `Editor/IndoorDroneSceneBuilder.cs`：以 Unity 原生幾何產生可儲存場景。
 
+以上腳本位於 `Assets/IndoorDrone`。`ProjectSettings/ProjectVersion.txt` 固定 Editor 版本，
+`Packages/manifest.json` 宣告 VS2022 整合與模擬所需的 Unity 內建模組。
+所有既有腳本與資料夾均附帶固定 GUID 的 `.meta`，避免不同電腦產生不一致的資產識別。
+首次成功開啟後，請將 Unity 產生的 `Packages/packages-lock.json`、其餘 `ProjectSettings`
+及需要共享的場景／材質連同 `.meta` 提交；不要提交 `Library` 或 VS 暫存檔。
+
 這是**純軟體流程驗證**：機身鎖定旋轉，拆裝是離散互動，並未模擬旋翼空氣動力、
 螺紋扭矩、電路、視覺辨識、機械手臂或燈泡破碎。搬運物品不改變重量，
 懸停目標不是實體障礙物；返航沒有避障規劃，碰撞只統計、不判定損壞。
@@ -70,5 +110,8 @@ C# + Unity 桌面鍵盤操作範例，包含封閉室內場景、簡化四旋翼
 
 ### 驗證狀態
 
-儲存庫尚無自動化測試或建置設定。開發沙箱未安裝 Unity Editor，無法在此編譯
-Unity API 或執行 Play Mode；請在上述 Unity 版本依「任務與驗收」完成實機編輯器驗收。
+儲存庫尚無自動化測試或 CI 建置流程。開發沙箱未安裝 Unity Editor／VS2022，
+無法在此還原 Unity 套件、產生方案、編譯 Unity API、執行 Play Mode 或輸出 Windows 執行檔。
+轉換僅加入專案／套件設定與資產識別檔，未修改飛行或換燈泡程式邏輯。
+請在本機確認 Hub 可開啟、Console 無錯誤、VS2022 可補全與中斷點偵錯，
+再依「任務與驗收」走完任務，並在 Windows 建置結果重跑相同流程。
