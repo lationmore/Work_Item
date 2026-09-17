@@ -13,7 +13,7 @@ namespace IndoorDrone.Editor
 {
     public static class IndoorDroneSceneBuilder
     {
-        private const string GeneratedRoot = "Assets/IndoorDrone/Generated";
+        internal const string GeneratedRoot = "Assets/IndoorDrone/Generated";
 
         [MenuItem("Tools/Indoor Drone/Create Demo Scene")]
         public static void CreateScene()
