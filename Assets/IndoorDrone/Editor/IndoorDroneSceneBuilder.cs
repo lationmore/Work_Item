@@ -271,17 +271,18 @@ namespace IndoorDrone.Editor
             }
             else
             {
-                string latestScene = demoScenes[demoScenes.Length - 1];
-                summary.Add("示範場景：已找到 " + latestScene + "。");
-                if (EditorBuildSettings.scenes.Any(scene => scene.path == latestScene && scene.enabled))
+                summary.Add("示範場景：已找到 " + demoScenes.Length + " 個 IndoorDrone.unity。");
+                if (EditorBuildSettings.scenes.Any(scene => scene.enabled && demoScenes.Contains(scene.path)))
                 {
-                    summary.Add("Build Settings：已包含目前示範場景。");
+                    summary.Add("Build Settings：已包含至少一個啟用中的示範場景。");
+                    if (demoScenes.Length > 1)
+                        nextSteps.Add("若保留多個 Generated Demo，建置前請在 Build Settings 只勾選這次要啟動的場景。");
                 }
                 else
                 {
                     hasIssues = true;
-                    summary.Add("Build Settings：尚未啟用目前示範場景。");
-                    nextSteps.Add("請重新執行 Create Demo Scene，或到 File → Build Settings 將 " + latestScene + " 加入並勾選。");
+                    summary.Add("Build Settings：尚未啟用任何示範場景。");
+                    nextSteps.Add("請重新執行 Create Demo Scene，或到 File → Build Settings 將要使用的 IndoorDrone.unity 加入並勾選。");
                 }
             }
 
