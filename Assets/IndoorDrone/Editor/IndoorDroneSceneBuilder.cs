@@ -120,9 +120,9 @@ namespace IndoorDrone.Editor
             Shape(lobby.transform, "Door frame right", PrimitiveType.Cube, new Vector3(4.32f, 2f, 5.68f), new Vector3(0.16f, 2.16f, 0.16f), darkStone);
             Shape(lobby.transform, "Door mullion left", PrimitiveType.Cube, new Vector3(-1.45f, 2f, 5.68f), new Vector3(0.12f, 2.16f, 0.12f), darkStone);
             Shape(lobby.transform, "Door mullion right", PrimitiveType.Cube, new Vector3(1.45f, 2f, 5.68f), new Vector3(0.12f, 2.16f, 0.12f), darkStone);
-            Shape(lobby.transform, "Door glass left", PrimitiveType.Cube, new Vector3(-2.88f, 2f, 5.72f), new Vector3(2.72f, 2.16f, 0.05f), glass, false);
-            Shape(lobby.transform, "Door glass center", PrimitiveType.Cube, new Vector3(0f, 2f, 5.72f), new Vector3(2.72f, 2.16f, 0.05f), glass, false);
-            Shape(lobby.transform, "Door glass right", PrimitiveType.Cube, new Vector3(2.88f, 2f, 5.72f), new Vector3(2.72f, 2.16f, 0.05f), glass, false);
+            Shape(lobby.transform, "Door glass left", PrimitiveType.Cube, new Vector3(-2.88f, 2f, 5.72f), new Vector3(2.58f, 2.16f, 0.05f), glass, false);
+            Shape(lobby.transform, "Door glass center", PrimitiveType.Cube, new Vector3(0f, 2f, 5.72f), new Vector3(2.58f, 2.16f, 0.05f), glass, false);
+            Shape(lobby.transform, "Door glass right", PrimitiveType.Cube, new Vector3(2.88f, 2f, 5.72f), new Vector3(2.58f, 2.16f, 0.05f), glass, false);
             Shape(lobby.transform, "Decor frame outer", PrimitiveType.Cube, new Vector3(0f, 2.1f, 5.54f), new Vector3(2.8f, 3.6f, 0.22f), darkStone);
             Shape(lobby.transform, "Decor frame inner", PrimitiveType.Cube, new Vector3(0f, 2.1f, 5.45f), new Vector3(2.2f, 3.12f, 0.08f), goldStone);
             Shape(lobby.transform, "Pedestal body", PrimitiveType.Cube, new Vector3(0f, 0.66f, 3.65f), new Vector3(1.2f, 1.32f, 1.2f), cream);
@@ -277,8 +277,8 @@ namespace IndoorDrone.Editor
             material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
             material.SetInt("_ZWrite", 0);
             material.DisableKeyword("_ALPHATEST_ON");
-            material.DisableKeyword("_ALPHABLEND_ON");
-            material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+            material.EnableKeyword("_ALPHABLEND_ON");
+            material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
             material.renderQueue = 3000;
             material.SetFloat("_Glossiness", 0.92f);
             material.SetFloat("_Metallic", 0f);
