@@ -8,6 +8,7 @@ using UnityEditor.PackageManager;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using PackageManagerPackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 namespace IndoorDrone.Editor
 {
@@ -221,7 +222,7 @@ namespace IndoorDrone.Editor
                 nextSteps.Add("請在 Unity Hub 使用 2022.3.62f3 開啟專案，再重新驗證。");
             }
 
-            PackageInfo visualStudioPackage = PackageInfo.FindForAssetPath(VisualStudioPackagePath);
+            PackageManagerPackageInfo visualStudioPackage = PackageManagerPackageInfo.FindForAssetPath(VisualStudioPackagePath);
             if (visualStudioPackage == null)
             {
                 hasIssues = true;
