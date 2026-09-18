@@ -262,6 +262,10 @@ namespace IndoorDrone.Editor
         private static void CreateFloorPattern(Transform parent, Material floor, Material floorInset, Material cream)
         {
             Shape(parent, "Floor", PrimitiveType.Cube, new Vector3(0f, -0.1f, 0f), new Vector3(12f, 0.2f, 12f), floor);
+            Shape(parent, "Side border left", PrimitiveType.Cube, new Vector3(-5.08f, 0.012f, 0f),
+                new Vector3(0.46f, 0.004f, 12f), cream, false);
+            Shape(parent, "Side border right", PrimitiveType.Cube, new Vector3(5.08f, 0.012f, 0f),
+                new Vector3(0.46f, 0.004f, 12f), cream, false);
             Shape(parent, "Inset disc", PrimitiveType.Cylinder, new Vector3(0f, 0.01f, 0.55f),
                 new Vector3(3.75f, 0.01f, 3.75f), floorInset, false);
             Shape(parent, "Inset ring", PrimitiveType.Cylinder, new Vector3(0f, 0.014f, 0.55f),
@@ -289,6 +293,7 @@ namespace IndoorDrone.Editor
             Shape(parent, "Ceiling border", PrimitiveType.Cube, new Vector3(0f, 4.45f, 0f), new Vector3(12f, 0.16f, 12f), cream);
             Shape(parent, "Ceiling tray", PrimitiveType.Cube, new Vector3(-0.1f, 4.28f, 0.3f), new Vector3(9.1f, 0.12f, 8.5f), cream);
             Shape(parent, "Rear soffit", PrimitiveType.Cube, new Vector3(0f, 3.54f, 5.42f), new Vector3(9.8f, 0.22f, 0.45f), cream);
+            Shape(parent, "Rear soffit trim", PrimitiveType.Cube, new Vector3(0f, 3.42f, 5.18f), new Vector3(9.4f, 0.05f, 0.22f), darkStone, false);
 
             Shape(parent, "South wall", PrimitiveType.Cube, new Vector3(0f, 2.2f, -5.85f), new Vector3(12f, 4.4f, 0.3f), cream);
             Shape(parent, "West wall", PrimitiveType.Cube, new Vector3(-5.85f, 2.2f, 0f), new Vector3(0.3f, 4.4f, 12f), cream);
@@ -297,12 +302,16 @@ namespace IndoorDrone.Editor
             Shape(parent, "North header wall", PrimitiveType.Cube, new Vector3(0f, 4.08f, 5.85f), new Vector3(12f, 0.74f, 0.3f), cream);
             Shape(parent, "North left pier", PrimitiveType.Cube, new Vector3(-5.08f, 2.18f, 5.85f), new Vector3(1.54f, 4.36f, 0.3f), cream);
             Shape(parent, "North right pier", PrimitiveType.Cube, new Vector3(5.08f, 2.18f, 5.85f), new Vector3(1.54f, 4.36f, 0.3f), cream);
+            Shape(parent, "Decorative pilaster left", PrimitiveType.Cube, new Vector3(-1.34f, 2.18f, 5.58f), new Vector3(0.28f, 3.76f, 0.42f), darkStone);
+            Shape(parent, "Decorative pilaster right", PrimitiveType.Cube, new Vector3(1.64f, 2.18f, 5.58f), new Vector3(0.28f, 3.76f, 0.42f), darkStone);
 
             Shape(parent, "Rear glazing beam", PrimitiveType.Cube, new Vector3(0f, 3.24f, 5.68f), new Vector3(9.45f, 0.16f, 0.16f), darkStone);
             Shape(parent, "Rear transom beam", PrimitiveType.Cube, new Vector3(0f, 3.78f, 5.68f), new Vector3(9.45f, 0.11f, 0.16f), darkStone);
             Shape(parent, "Rear glazing sill", PrimitiveType.Cube, new Vector3(0f, 0.92f, 5.68f), new Vector3(9.45f, 0.09f, 0.16f), darkStone);
             foreach (float x in new[] { -3.72f, -2.12f, -0.48f, 1.15f, 2.82f, 4.05f })
                 Shape(parent, "Rear mullion", PrimitiveType.Cube, new Vector3(x, 2.06f, 5.68f), new Vector3(0.12f, 2.14f, 0.12f), darkStone);
+            foreach (float x in new[] { -2.68f, 0.75f, 3.75f })
+                Shape(parent, "Rear transom mullion", PrimitiveType.Cube, new Vector3(x, 3.53f, 5.68f), new Vector3(0.1f, 0.44f, 0.1f), darkStone, false);
 
             Shape(parent, "Rear frame left", PrimitiveType.Cube, new Vector3(-4.62f, 2.06f, 5.68f), new Vector3(0.16f, 2.32f, 0.16f), darkStone);
             Shape(parent, "Rear frame right", PrimitiveType.Cube, new Vector3(4.62f, 2.06f, 5.68f), new Vector3(0.16f, 2.32f, 0.16f), darkStone);
@@ -320,12 +329,15 @@ namespace IndoorDrone.Editor
             Shape(parent, "Decor panel", PrimitiveType.Cube, new Vector3(0.15f, 2.2f, 5.41f), new Vector3(1.82f, 3.34f, 0.05f), goldStone, false);
             Shape(parent, "Decor panel cap", PrimitiveType.Cube, new Vector3(0.15f, 3.98f, 5.46f), new Vector3(2.32f, 0.14f, 0.18f), darkStone);
             Shape(parent, "Decor panel base", PrimitiveType.Cube, new Vector3(0.15f, 0.42f, 5.46f), new Vector3(2.32f, 0.12f, 0.18f), darkStone);
+            Shape(parent, "Decor panel inner left", PrimitiveType.Cube, new Vector3(-0.62f, 2.2f, 5.44f), new Vector3(0.08f, 3.28f, 0.06f), darkStone, false);
+            Shape(parent, "Decor panel inner right", PrimitiveType.Cube, new Vector3(0.92f, 2.2f, 5.44f), new Vector3(0.08f, 3.28f, 0.06f), darkStone, false);
 
             Shape(parent, "Right stone wall", PrimitiveType.Cube, new Vector3(5f, 2.2f, 2.2f), new Vector3(2.16f, 4.4f, 6.6f), darkStone);
             Shape(parent, "Right stone return", PrimitiveType.Cube, new Vector3(4.02f, 2.2f, 4.72f), new Vector3(1.05f, 4.4f, 2.65f), darkStone);
             Shape(parent, "Right stone face", PrimitiveType.Cube, new Vector3(4.48f, 2.2f, 1.18f), new Vector3(1.22f, 4.4f, 2.36f), darkStone);
             Shape(parent, "Right stone plinth", PrimitiveType.Cube, new Vector3(4.45f, 0.36f, 1.25f), new Vector3(1.52f, 0.72f, 1.42f), darkStone);
             Shape(parent, "Right stone header", PrimitiveType.Cube, new Vector3(4.72f, 4.06f, 2.68f), new Vector3(1.86f, 0.26f, 5.44f), darkStone);
+            Shape(parent, "Right foreground mass", PrimitiveType.Cube, new Vector3(5.24f, 2.2f, -0.9f), new Vector3(1.68f, 4.4f, 1.82f), darkStone);
         }
 
         private static void CreatePedestalDisplay(Transform parent, Material cream, Material lightTrim,
@@ -335,6 +347,7 @@ namespace IndoorDrone.Editor
             Shape(parent, "Pedestal plinth", PrimitiveType.Cube, new Vector3(0.12f, 0.62f, 3.56f), new Vector3(1.18f, 1.08f, 1.18f), cream);
             Shape(parent, "Pedestal neck", PrimitiveType.Cube, new Vector3(0.12f, 1.34f, 3.56f), new Vector3(0.92f, 0.28f, 0.92f), lightTrim);
             Shape(parent, "Pedestal lip", PrimitiveType.Cube, new Vector3(0.12f, 1.52f, 3.56f), new Vector3(1.08f, 0.08f, 1.08f), cream);
+            Shape(parent, "Pedestal shadow plinth", PrimitiveType.Cube, new Vector3(0.12f, 0.08f, 3.56f), new Vector3(1.64f, 0.06f, 1.64f), cream);
             CreateEagleStatue(parent, new Vector3(0.12f, 1.78f, 3.56f), eagleMetal);
 
             CreatePlanter(parent, "Left planter front", new Vector3(-2.62f, 0f, 3.06f), planterWhite, foliage);
@@ -393,6 +406,8 @@ namespace IndoorDrone.Editor
                 new Vector3(0.14f, 0.62f, 0.14f), foliage, false, new Vector3(10f, 0f, -24f));
             Shape(planter.transform, "Leaf rear", PrimitiveType.Capsule, new Vector3(0.02f, 1.52f, -0.16f),
                 new Vector3(0.12f, 0.52f, 0.12f), foliage, false, new Vector3(18f, 0f, 0f));
+            Shape(planter.transform, "Leaf front", PrimitiveType.Capsule, new Vector3(-0.04f, 1.48f, 0.18f),
+                new Vector3(0.12f, 0.48f, 0.12f), foliage, false, new Vector3(-18f, 0f, 0f));
         }
 
         private static void CreateEagleStatue(Transform parent, Vector3 localPosition, Material eagleMetal)
@@ -422,6 +437,8 @@ namespace IndoorDrone.Editor
                 new Vector3(0.92f, 0.06f, 0.16f), eagleMetal, true, new Vector3(0f, 6f, 96f));
             Shape(eagle.transform, "Wing left lower", PrimitiveType.Cube, new Vector3(-0.7f, 0.46f, -0.08f),
                 new Vector3(0.74f, 0.05f, 0.16f), eagleMetal, true, new Vector3(0f, 12f, 42f));
+            Shape(eagle.transform, "Wing left feather", PrimitiveType.Cube, new Vector3(-1.32f, 1.1f, 0.06f),
+                new Vector3(0.48f, 0.04f, 0.12f), eagleMetal, true, new Vector3(0f, 8f, 112f));
             Shape(eagle.transform, "Wing right base", PrimitiveType.Cube, new Vector3(0.38f, 0.28f, 0f),
                 new Vector3(0.6f, 0.08f, 0.2f), eagleMetal, true, new Vector3(0f, -18f, -58f));
             Shape(eagle.transform, "Wing right sweep", PrimitiveType.Cube, new Vector3(0.78f, 0.8f, 0.04f),
@@ -430,6 +447,8 @@ namespace IndoorDrone.Editor
                 new Vector3(0.92f, 0.06f, 0.16f), eagleMetal, true, new Vector3(0f, -6f, -96f));
             Shape(eagle.transform, "Wing right lower", PrimitiveType.Cube, new Vector3(0.7f, 0.46f, -0.08f),
                 new Vector3(0.74f, 0.05f, 0.16f), eagleMetal, true, new Vector3(0f, -12f, -42f));
+            Shape(eagle.transform, "Wing right feather", PrimitiveType.Cube, new Vector3(1.32f, 1.1f, 0.06f),
+                new Vector3(0.48f, 0.04f, 0.12f), eagleMetal, true, new Vector3(0f, -8f, -112f));
         }
     }
 
