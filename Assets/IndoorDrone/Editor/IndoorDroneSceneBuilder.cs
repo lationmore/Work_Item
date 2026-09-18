@@ -95,6 +95,7 @@ namespace IndoorDrone.Editor
             Material blue = MaterialAsset(folder, "Home", Color.cyan, shader);
 
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
             RenderSettings.ambientLight = new Color(0.52f, 0.52f, 0.5f);
             Light lobbySun = new GameObject("Lobby ambient key").AddComponent<Light>();
             lobbySun.type = LightType.Directional;
@@ -119,9 +120,9 @@ namespace IndoorDrone.Editor
             Shape(lobby.transform, "Door frame right", PrimitiveType.Cube, new Vector3(4.32f, 2f, 5.68f), new Vector3(0.16f, 2.16f, 0.16f), darkStone);
             Shape(lobby.transform, "Door mullion left", PrimitiveType.Cube, new Vector3(-1.45f, 2f, 5.68f), new Vector3(0.12f, 2.16f, 0.12f), darkStone);
             Shape(lobby.transform, "Door mullion right", PrimitiveType.Cube, new Vector3(1.45f, 2f, 5.68f), new Vector3(0.12f, 2.16f, 0.12f), darkStone);
-            Shape(lobby.transform, "Door glass left", PrimitiveType.Cube, new Vector3(-2.88f, 2f, 5.72f), new Vector3(2.72f, 2.16f, 0.05f), glass);
-            Shape(lobby.transform, "Door glass center", PrimitiveType.Cube, new Vector3(0f, 2f, 5.72f), new Vector3(2.72f, 2.16f, 0.05f), glass);
-            Shape(lobby.transform, "Door glass right", PrimitiveType.Cube, new Vector3(2.88f, 2f, 5.72f), new Vector3(2.72f, 2.16f, 0.05f), glass);
+            Shape(lobby.transform, "Door glass left", PrimitiveType.Cube, new Vector3(-2.88f, 2f, 5.72f), new Vector3(2.72f, 2.16f, 0.05f), glass, false);
+            Shape(lobby.transform, "Door glass center", PrimitiveType.Cube, new Vector3(0f, 2f, 5.72f), new Vector3(2.72f, 2.16f, 0.05f), glass, false);
+            Shape(lobby.transform, "Door glass right", PrimitiveType.Cube, new Vector3(2.88f, 2f, 5.72f), new Vector3(2.72f, 2.16f, 0.05f), glass, false);
             Shape(lobby.transform, "Decor frame outer", PrimitiveType.Cube, new Vector3(0f, 2.1f, 5.54f), new Vector3(2.8f, 3.6f, 0.22f), darkStone);
             Shape(lobby.transform, "Decor frame inner", PrimitiveType.Cube, new Vector3(0f, 2.1f, 5.45f), new Vector3(2.2f, 3.12f, 0.08f), goldStone);
             Shape(lobby.transform, "Pedestal body", PrimitiveType.Cube, new Vector3(0f, 0.66f, 3.65f), new Vector3(1.2f, 1.32f, 1.2f), cream);
