@@ -155,7 +155,7 @@ namespace IndoorDrone.Editor
             result.transform.localScale = scale;
             result.GetComponent<Renderer>().sharedMaterial = material;
             if (!solid)
-                Object.DestroyImmediate(result.GetComponent<Collider>());
+                UnityEngine.Object.DestroyImmediate(result.GetComponent<Collider>());
             return result;
         }
 
@@ -258,7 +258,7 @@ namespace IndoorDrone.Editor
                 nextSteps.Add("請改成 Input Manager (Old) 或 Both，讓 WASD／Space／E／P／L 可於模擬內運作。");
             }
 
-            string[] demoScenes = AssetDatabase.FindAssets("t:Scene", new[] { GeneratedRoot })
+            string[] demoScenes = AssetDatabase.FindAssets("t:Scene", new[] { IndoorDroneSceneBuilder.GeneratedRoot })
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Where(path => path.EndsWith("/IndoorDrone.unity", StringComparison.OrdinalIgnoreCase))
                 .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
